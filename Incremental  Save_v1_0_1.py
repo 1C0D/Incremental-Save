@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Incremental Save",
     "author": "1COD",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 80, 0),
     "location": "File menu",
     "warning": "",
@@ -69,7 +69,7 @@ class Incremental_OP_save(bpy.types.Operator):
         incrementedFile = os.path.join(dir_name, inc_name)
         bpy.ops.wm.save_as_mainfile(filepath=incrementedFile) #save as with the new path
 
-        textReport = 'Saved "'+inc_name+'"'
+        textReport = "Saved "+repr(inc_name)
         self.report({'INFO'},textReport)
 
         return {'FINISHED'}
