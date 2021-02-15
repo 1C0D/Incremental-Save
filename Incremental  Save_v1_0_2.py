@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Incremental Save",
     "author": "1COD",
-    "version": (1, 0, 1),
+    "version": (1, 0, 2),
     "blender": (2, 80, 0),
     "location": "File menu",
     "warning": "",
@@ -41,10 +41,12 @@ class Incremental_OP_save(bpy.types.Operator):
 
         version=""
         letters=""
+        num = True #to not catch other digits in name e.g 1name1
         for l in name[::-1]: #name inverted to have increment at first
-            if l.isdigit():
+            if l.isdigit() and num:
                 version=str(l)+version   #get back digits in right order
             else:
+                num = False
                 letters=str(l)+letters  #when no more digit get what is before
 
         dir_name=os.path.dirname(file)
