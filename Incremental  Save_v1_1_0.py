@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Incremental Save",
     "author": "1COD",
-    "version": (1, 0, 2),
+    "version": (1, 1, 0),
     "blender": (2, 80, 0),
     "location": "File menu",
     "warning": "",
@@ -21,7 +21,9 @@ if you physically delete files, after having saved, in the same session, it will
 if you want a new name, use the normal save as (ctrl+shift+S)    
 """
 
-import bpy,os
+import bpy
+import os
+from itertools import takewhile
 
 class Incremental_OP_save(bpy.types.Operator):
     """Tooltip"""
@@ -40,26 +42,17 @@ class Incremental_OP_save(bpy.types.Operator):
         name= os.path.splitext(ext_name)[0] #name without extension
 
         version=""
-        letters=""
-        num = True #to not catch other digits in name e.g 1name1
-        for l in name[::-1]: #name inverted to have increment at first
-            if l.isdigit() and num:
-                version=str(l)+version   #get back digits in right order
-            else:
-                num = False
-                letters=str(l)+letters  #when no more digit get what is before
+        letters=""        
+        version = ''.join(list(takewhile(lambda c: c.isdigit(), name[::-1])))
+        letters = name[:-len(version)] if version else name
 
         dir_name=os.path.dirname(file)
-        same_name_list = [os.path.splitext(item)[0] #find incremented instances in dir
+        same_name_list = [os.path.splitext(item)[0] #find higher incremented instances in dir
                             for item in sorted(os.listdir(dir_name)) 
                                 if item.endswith('.blend') and letters in item]
         if same_name_list:
             version=""
-            for l in same_name_list[-1][::-1]: #get the higher incremented version in same_name_list
-                if l.isdigit():
-                    version=str(l)+version
-                else:
-                    break
+            version = ''.join(list(takewhile(lambda c: c.isdigit(), name[::-1])))        
             if version:
                 inc_version=int(version)+1 #increment the version
             else:
@@ -83,5 +76,3 @@ def register():
 def unregister():
     bpy.utils.unregister_class(Incremental_OP_save)
 
-# if __name__ == "__main__":
-    # register()
